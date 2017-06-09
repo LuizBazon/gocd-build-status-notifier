@@ -79,8 +79,8 @@ public class BitbucketProvider extends DefaultProvider {
         LOGGER.info("Update URL status: " + updateURL);
 
         Map<String, String> params = new HashMap<String, String>();
-        //params.put("url", "http://www.easynvest.com.br");
-        params.put("url", trackbackURL);
+        params.put("url", "http://www.easynvest.com.br");
+        //params.put("url", trackbackURL);
         String state = getState(result);
         params.put("state", state);
         params.put("key", pipelineStage);
@@ -88,7 +88,7 @@ public class BitbucketProvider extends DefaultProvider {
         String requestBody = new GsonBuilder().create().toJson(params);
         LOGGER.info("requestBody: " + requestBody);
 
-        postRequest(updateURL, AuthenticationType.BASIC, usernameToUse, passwordToUse, requestBody);
+        httpClient.postRequest(updateURL, AuthenticationType.BASIC, usernameToUse, passwordToUse, requestBody);
         
         setStatusPR(pluginSettings, pathUrl, prId, state);
     }
@@ -99,11 +99,11 @@ public class BitbucketProvider extends DefaultProvider {
     	if(state == FAILED_STATE){
     		LOGGER.info("Declining PR " + prId + "\n Repository: " + pathUrl);
     		String requestBody = new GsonBuilder().create().toJson(new Object());
-    		postRequest(updateURL, AuthenticationType.BASIC, pluginSettings.getUsername(), pluginSettings.getPassword(), requestBody);
+    		httpClient.postRequest(updateURL, AuthenticationType.BASIC, pluginSettings.getUsername(), pluginSettings.getPassword(), requestBody);
     	}
     }
     
-    private HttpHost getHttpHost(String url) throws Exception {
+    /*private HttpHost getHttpHost(String url) throws Exception {
         URI uri = new URI(url);
         return new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
     }
@@ -149,7 +149,7 @@ public class BitbucketProvider extends DefaultProvider {
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public List<Map<String, Object>> validateConfig(Map<String, Object> fields) {
