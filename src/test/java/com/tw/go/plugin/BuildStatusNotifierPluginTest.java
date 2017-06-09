@@ -52,66 +52,6 @@ public class BuildStatusNotifierPluginTest {
         plugin.setProvider(provider);
     }
 
-    @Test
-    public void shouldRegisterForStageStatusChange() {
-        assertThat(plugin.handleNotificationsInterestedIn().responseBody(), is("{\"notifications\":[\"stage-status\"]}"));
-    }
-
-    @Test
-    public void shouldDelegateUpdateStatusToProviderWithCorrectParameters() throws Exception {
-        PluginSettings mockSettings = mock(PluginSettings.class);
-        when(plugin.getPluginSettings()).thenReturn(mockSettings);
-
-        String expectedURL = "url";
-        String expectedUsername = "username";
-        String expectedRevision = "sha-1";
-        String expectedPRId = "1";
-        String pipelineName = "pipeline";
-        String pipelineCounter = "1";
-        String stageName = "stage";
-        String stageCounter = "1";
-        String expectedPipelineStage = String.format("%s/%s", pipelineName, stageName);
-        String expectedPipelineInstance = String.format("%s/%s/%s/%s", pipelineName, pipelineCounter, stageName, stageCounter);
-        String expectedStageResult = "Passed";
-
-        Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, expectedStageResult);
-        plugin.handleStageNotification(createGoPluginAPIRequest(requestBody));
-
-        verify(provider).updateStatus(eq(expectedURL), any(PluginSettings.class), eq("1"), eq(expectedRevision), eq(expectedPipelineStage), eq(expectedStageResult), eq("http://localhost:8153/go/pipelines/" + expectedPipelineInstance));
-    }
-
-    @Test
-    public void shouldReturnPluginSettings() throws Exception {
-        Provider mockProvider = mock(Provider.class);
-        PluginConfigurationView mockConfigView = mock(PluginConfigurationView.class);
-        when(mockProvider.configurationView()).thenReturn(mockConfigView);
-        Map<String, Object> fields = new HashMap<String, Object>();
-        when(mockConfigView.fields()).thenReturn(fields);
-
-        plugin.setProvider(mockProvider);
-
-        Map<String, Object> configuration = new Gson().fromJson(
-                plugin.handle(createRequest(PLUGIN_SETTINGS_GET_CONFIGURATION)
-        ).responseBody(), Map.class);
-
-        assertThat(configuration, is(fields));
-    }
-
-    @Test
-    public void shouldReturnCorrectConfigForStashPlugin() throws Exception {
-        plugin.setProvider(new StashProvider());
-
-        Map<String, Object> configuration = new Gson().fromJson(
-                plugin.handle(createRequest(PLUGIN_SETTINGS_GET_CONFIGURATION)
-        ).responseBody(), Map.class);
-
-        assertThat(configuration.containsKey("server_base_url"), is(true));
-        assertThat(configuration.containsKey("end_point"), is(true));
-        assertThat(configuration.containsKey("username"), is(true));
-        assertThat(configuration.containsKey("password"), is(true));
-        assertThat(configuration.containsKey("oauth_token"), is(true));
-        assertThat(configuration.containsKey("review_label"), is(false));
-    }
 
     private GoPluginApiRequest createRequest(final String name) {
         return new GoPluginApiRequest() {

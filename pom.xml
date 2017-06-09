@@ -80,6 +80,17 @@
                 <maven.resources.overwrite>true</maven.resources.overwrite> 
             </properties>
         </profile>
+        <profile>
+            <id>bitbucket.pr.status</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <plugin.name>bitbucket-pr-status</plugin.name>
+                <resource.directory>src/main/resources/bitbucket</resource.directory>
+                <maven.resources.overwrite>true</maven.resources.overwrite> 
+            </properties>
+        </profile>
     </profiles>
 
     <build>
